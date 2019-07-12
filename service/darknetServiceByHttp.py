@@ -210,7 +210,7 @@ def main():
                 # ret["label_str"] = ret["label_str"] + str(r[i][0]) + " " + str(r[i][1]) + ","
                 ret["label_str"] = "NG"
                 ret["points"].append(r[i])
-                cv2.putText(img, str(r[i][0]), (int(x1), int(y1)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+                cv2.putText(img, str(r[i][0]) + " " + str(r[i][1]), (int(x1), int(y1)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
                 cv2.rectangle(img, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 3)
                 cv2.imwrite(out_put_path, img)
         print("\ntotal_time: " + str(total_time) + "\nnumber: " + str(ret["num"]))
