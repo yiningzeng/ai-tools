@@ -26,6 +26,7 @@ score = 0.01
 img_ext = "*.jpg" # 图片格式
 lib_dll = "/home/baymin/daily-work/new-work/ab-darknet-localhost/libdark.so"
 
+is_detecton = False
 
 def sample(probs):
     s = sum(probs)
@@ -148,6 +149,8 @@ def classify(net, meta, im):
     return res
 
 def detect(net, meta, image, thresh=.5, hier_thresh=.5, nms=.45):
+    global is_detecton
+    is_detecton = True
     im = load_image(image, 0, 0)
     num = c_int(0)
     pnum = pointer(num)
@@ -165,12 +168,14 @@ def detect(net, meta, image, thresh=.5, hier_thresh=.5, nms=.45):
     res = sorted(res, key=lambda x: -x[1])
     free_image(im)
     free_detections(dets, num)
+    is_detecton = False
     return res
     
 
 @app.route('/pandas/', methods=['GET', 'POST'])
 def main():    
     if request.method == 'POST' or request.method == 'GET':
+        global is_detecton
         img = base64.b64decode(str(request.form['photo']))       
         f_name = str(request.form['name'])
         # print("sdfsdafasdfsdafa",f_name)
@@ -180,6 +185,13 @@ def main():
         cv2.imwrite(out_put_path, img)
 
         ret = {"num": 0, "label_str": "OK,", "points": [], "img_name": f_name, "process_time": "s"}    #######
+
+        while 1:
+            if is_detecton:
+                time.sleep(0.1)
+            else:
+                break
+
         start_time = time.time()
         r = detect(net, meta, out_put_path)
         end_time = time.time()
