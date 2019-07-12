@@ -185,12 +185,13 @@ def main():
         end_time = time.time()
         total_time = end_time - start_time
         ret["num"] = len(r)
+        print("--------------------------")
         for i in range(len(r)):
+            print(i+1)
             x1 = r[i][2][0] - r[i][2][2] / 2
             y1 = r[i][2][1] - r[i][2][3] / 2
             x2 = r[i][2][0] + r[i][2][2] / 2
             y2 = r[i][2][1] + r[i][2][3] / 2
-            print("--------------------------")
             print r[i]
             if r[i][1] > score:
                 print "save > " + out_put_path
@@ -200,7 +201,8 @@ def main():
                 cv2.putText(img, str(r[i][0]), (int(x1), int(y1)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
                 cv2.rectangle(img, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 3)
                 cv2.imwrite(out_put_path, img)
-                print("--------------------------")
+        print("\ntotal_time: " + str(total_time) + "\nnumber: " + str(ret["num"]))
+        print("--------------------------")
         ret["process_time"] = total_time
         ret["points"] = str(ret["points"])
         ret = json.dumps(ret)
