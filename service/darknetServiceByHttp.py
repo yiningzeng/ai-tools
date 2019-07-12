@@ -12,7 +12,8 @@ import cv2
 import base64
 from flask import Flask, request
 import numpy as np
-
+reload(sys)
+sys.setdefaultencoding("utf8")
 app = Flask(__name__)
 
 cfg = "/home/baymin/daily-work/new-work/ab-darknet-localhost/yunsheng/yolov3-voc-test.cfg"
@@ -167,7 +168,7 @@ def detect(net, meta, image, thresh=.5, hier_thresh=.5, nms=.45):
     return res
     
 
-@app.route('/test/', methods=['GET', 'POST'])
+@app.route('/pandas/', methods=['GET', 'POST'])
 def main():    
     if request.method == 'POST' or request.method == 'GET':
         img = base64.b64decode(str(request.form['photo']))       
