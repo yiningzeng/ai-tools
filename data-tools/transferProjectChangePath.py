@@ -11,9 +11,9 @@ import glob
 import PIL.Image
 import PIL.ImageDraw
 
-path = "/home/baymin/test/"
-new_path="change_1_ok"
-old_path="/media/baymin/"
+path = "/home/baymin/daily-work/new-work/素材/yunsheng_date/6and4/"
+new_path="/home/baymin/daily-work"
+old_path="/media/baymin/c731be01-5353-4600-8df0-b766fc1f9b80"
 class MyEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, np.integer):
@@ -33,10 +33,14 @@ class ChangePath(object):
     def save_json(self):
 
         for num, json_file in enumerate(self.labelme_json):
-            with open(json_file, 'r') as fp:
-                data = json.load(fp)  # 加载json文件
-                data['asset']['path'] = str(data['asset']['path']).replace(old_path, new_path)
-            json.dump(data, open(json_file, 'w'), indent=4, cls=MyEncoder)  # indent=4 更加美观显示
+            print("dodo" + json_file)
+            try:
+                with open(json_file, 'r') as fp:
+                    data = json.load(fp)  # 加载json文件
+                    data['asset']['path'] = str(data['asset']['path']).replace(old_path, new_path)
+                json.dump(data, open(json_file, 'w'), indent=4, cls=MyEncoder)  # indent=4 更加美观显示
+            except:
+                print("err" + json_file)
 
 if __name__ == '__main__':
     labelme_json=glob.glob(path+'*.json')
