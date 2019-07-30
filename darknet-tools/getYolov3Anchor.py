@@ -49,6 +49,8 @@ if __name__ == '__main__':
     print(out)
     print("Accuracy: {:.2f}%".format(avg_iou(data, out) * 100))
     print("Boxes:\n {}-{}".format(out[:, 0] * SIZE, out[:, 1] * SIZE))
-
+    print("yolov3：anchor ")
+    for num, obj in enumerate(out[:, 0] * SIZE):
+        print("{},{}, ".format(round(obj, 1), round((out[:, 1] * SIZE)[num], 1)), end='')
     ratios = np.around(out[:, 0] / out[:, 1], decimals=2).tolist()
-    print("Ratios:\n {}".format(sorted(ratios)))
+    print("\nRatios:\n {}".format(sorted(ratios)))
