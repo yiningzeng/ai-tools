@@ -6,7 +6,7 @@ import numpy as np
 import glob
 import argparse
 from PIL import Image
-from kmeans import kmeans, avg_iou
+from kmeans import kmeans
 from os import listdir, getcwd
 from os.path import join
 
@@ -140,17 +140,14 @@ def load_dataset(path):
 def get_anchor(path, clusters, size):
     data = load_dataset(path)
     out = kmeans(data, k=clusters)
-    acy = avg_iou(data, out) * 100
     aors = []
     print(out)
-    print("Accuracy: {:.2f}%".format(avg_iou(data, out) * 100))
     print("Boxes:\n {}-{}".format(out[:, 0] * size, out[:, 1] * size))
     print("yolov3：anchor ")
     for i, obj in enumerate(out[:, 0] * size):
         aors.append((round(obj, 1), round((out[:, 1] * size)[num], 1)))
-        print("{},{}, ".format(round(obj, 1), round((out[:, 1] * size)[num], 1)), end='')
     str_aors = ','.join(str(i) for i in aors).replace("(", "").replace(")", "").replace(" ", "")
-    return acy, str_aors, aors
+    return str_aors, aors
 
 
 if __name__ == '__main__':
@@ -178,7 +175,7 @@ if __name__ == '__main__':
             filename = os.path.splitext(image_id)[0]
             if filename == '1' or filename == '-1':
                 continue
-            print(image_id, end="")
+            print(image_id)
             if args.change_ext and ".jpg" not in image_id:
                 print(" convert to jpg")
                 im = Image.open('%s/JPEGImages/%s' % (args.voc_dir, image_id))
@@ -206,10 +203,9 @@ if __name__ == '__main__':
     os.system('sed -i "s/@classes@/%d/g" %s/yolov3-voc.cfg' % (len(classes), args.voc_dir))
     os.system('sed -i "s/@filters@/%d/g" %s/yolov3-voc.cfg' % ((len(classes) + 5) * 3, args.voc_dir))
     # 更改聚类信息
-    accuracy, str_anchors, anchors = get_anchor(args.voc_dir, args.clusters, args.size)
-    os.system('sed -i "s/@anchors@/%s/g" %s/yolov3-voc.cfg' % (str_anchors, args.voc_dir))
-    print("\nAccuracy: {:.2f}%".format(accuracy))
-    print("\nAnchors: {}".format(str_anchors))
+    # str_anchors, anchors = get_anchor(args.voc_dir, args.clusters, args.size)
+    # os.system('sed -i "s/@anchors@/%s/g" %s/yolov3-voc.cfg' % (str_anchors, args.voc_dir))
+    # print("\nAnchors: {}".format(str_anchors))
 
 
 
