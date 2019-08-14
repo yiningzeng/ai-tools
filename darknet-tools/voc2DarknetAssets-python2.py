@@ -202,6 +202,7 @@ if __name__ == '__main__':
     # 更改配置文件信息
     os.system('sed -i "s/@classes@/%d/g" %s/yolov3-voc.cfg' % (len(classes), args.voc_dir))
     os.system('sed -i "s/@filters@/%d/g" %s/yolov3-voc.cfg' % ((len(classes) + 5) * 3, args.voc_dir))
+    print("done")
     # 更改聚类信息
     # str_anchors, anchors = get_anchor(args.voc_dir, args.clusters, args.size)
     # os.system('sed -i "s/@anchors@/%s/g" %s/yolov3-voc.cfg' % (str_anchors, args.voc_dir))

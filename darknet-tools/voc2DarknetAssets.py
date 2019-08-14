@@ -210,7 +210,7 @@ if __name__ == '__main__':
     os.system('sed -i "s/@anchors@/%s/g" %s/yolov3-voc.cfg' % (str_anchors, args.voc_dir))
     print("\nAccuracy: {:.2f}%".format(accuracy))
     print("\nAnchors: {}".format(str_anchors))
-
+    print("done")
 
 
 
