@@ -155,6 +155,9 @@ def get_anchor(path, clusters, size):
 
 if __name__ == '__main__':
     args = parse_args()
+    os.system("rm %s/*.names" % args.voc_dir)
+    os.system("rm %s/*.data" % args.voc_dir)
+    os.system("rm %s/*.txt" % args.voc_dir)
     val_count = int(os.popen("ls -l %s|grep _val.txt|wc -l" % args.voc_dir).read().replace('\n', ''))
     set_files = glob.glob(args.voc_dir+'/ImageSets/Main/*.txt')
     for num, set in enumerate(set_files):

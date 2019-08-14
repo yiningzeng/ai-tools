@@ -152,6 +152,9 @@ def get_anchor(path, clusters, size):
 
 if __name__ == '__main__':
     args = parse_args()
+    os.system("rm %s/*.names" % args.voc_dir)
+    os.system("rm %s/*.data" % args.voc_dir)
+    os.system("rm %s/*.txt" % args.voc_dir)
     val_count = int(os.popen("ls -l %s|grep _val.txt|wc -l" % args.voc_dir).read().replace('\n', ''))
     set_files = glob.glob(args.voc_dir+'/ImageSets/Main/*.txt')
     for num, set in enumerate(set_files):
@@ -202,11 +205,17 @@ if __name__ == '__main__':
     # 更改配置文件信息
     os.system('sed -i "s/@classes@/%d/g" %s/yolov3-voc.cfg' % (len(classes), args.voc_dir))
     os.system('sed -i "s/@filters@/%d/g" %s/yolov3-voc.cfg' % ((len(classes) + 5) * 3, args.voc_dir))
+    os.system('/darknet/darknet detector calc_anchors %s/voc.data -num_of_clusters %d -width %d -height %d '
+              '\echo $! > %s/get_anchors_pid.txt' % (
+        args.voc_dir, args.clusters, args.size, args.size, args.voc_dir))
+    anchors = os.popen('cat /darknet/anchors.txt').read().replace('\n', '')
+    os.system('sed -i "s/@anchors@/%s/g" %s/yolov3-voc.cfg' % (anchors, args.voc_dir))
+    print("\nAnchors: {}".format(anchors))
     print("done")
     # 更改聚类信息
     # str_anchors, anchors = get_anchor(args.voc_dir, args.clusters, args.size)
-    # os.system('sed -i "s/@anchors@/%s/g" %s/yolov3-voc.cfg' % (str_anchors, args.voc_dir))
-    # print("\nAnchors: {}".format(str_anchors))
+
+
 
 
 
