@@ -200,6 +200,12 @@ if __name__ == '__main__':
     os.system("echo valid = %s/val.txt >> %s/voc.data" % (args.voc_dir, args.voc_dir))
     os.system("echo names = %s/voc.names >> %s/voc.data" % (args.voc_dir, args.voc_dir))
     os.system("echo backup = %s/backup >> %s/voc.data" % (args.voc_dir, args.voc_dir))
+    # 新增2个参数，为了画图，为了...? 为了爱
+    os.system("echo draw_url = %s >> %s/voc.data" % ("http://192.168.31.75:18888/draw_chart", args.voc_dir))
+    os.system('echo "project_id = \c" >> %s/voc.data' % args.voc_dir)
+    os.system('cat %s/container_id.txt >> %s/voc.data' % args.voc_dir)
+    # * draw_url=http://192.168.31.75:18888/draw_chart
+    # * project_id=项目名称
     os.system("mkdir -p %s/backup" % args.voc_dir)
 
     # 更改配置文件信息
