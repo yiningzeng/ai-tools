@@ -203,7 +203,7 @@ if __name__ == '__main__':
     # 新增2个参数，为了画图，为了...? 为了爱
     os.system("echo draw_url = %s >> %s/voc.data" % ("http://192.168.31.75:18888/draw_chart", args.voc_dir))
     os.system('echo "project_id = \c" >> %s/voc.data' % args.voc_dir)
-    os.system('cat %s/container_id.txt >> %s/voc.data' % args.voc_dir)
+    os.system('cat %s/container_id.log >> %s/voc.data' % args.voc_dir)
     # * draw_url=http://192.168.31.75:18888/draw_chart
     # * project_id=项目名称
     os.system("mkdir -p %s/backup" % args.voc_dir)
@@ -212,7 +212,7 @@ if __name__ == '__main__':
     os.system('sed -i "s/@classes@/%d/g" %s/yolov3-voc.cfg' % (len(classes), args.voc_dir))
     os.system('sed -i "s/@filters@/%d/g" %s/yolov3-voc.cfg' % ((len(classes) + 5) * 3, args.voc_dir))
     os.system('/darknet/darknet detector calc_anchors %s/voc.data -num_of_clusters %d -width %d -height %d '
-              '\echo $! > %s/get_anchors_pid.txt' % (
+              '\echo $! > %s/get_anchors_pid.log' % (
         args.voc_dir, args.clusters, args.size, args.size, args.voc_dir))
     anchors = os.popen('cat /darknet/anchors.txt').read().replace('\n', '')
     os.system('sed -i "s/@anchors@/%s/g" %s/yolov3-voc.cfg' % (anchors, args.voc_dir))
