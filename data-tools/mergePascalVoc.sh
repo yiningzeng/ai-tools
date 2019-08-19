@@ -4,8 +4,8 @@
 SALVEIFS=$IFS
 IFS=$(echo -en "\n\b")
 
-source_pascal_voc_path=$1
-target_pascal_voc_path=$2
+source_pascal_voc_path=$2
+target_pascal_voc_path=$1
 #首先复制annotations
 `cp ${source_pascal_voc_path}/Annotations/*.xml ${target_pascal_voc_path}/Annotations`
 #复制图片集到目标路径
@@ -14,8 +14,8 @@ target_pascal_voc_path=$2
 for element in `ls ${source_pascal_voc_path}/ImageSets/Main/*.txt`
     do
         onlyFileName=${element##*/} #该命令的作用是去掉变量dir_or_file从左边算起的最后一个’/‘字符及其左边的内容，返回从左边算起的最后一个’/’（不含该字符）的右边的内容
-        `echo >> ${2}/ImageSets/Main/${onlyFileName}`
-        `cat ${source_pascal_voc_path}/ImageSets/Main/${onlyFileName} >> ${2}/ImageSets/Main/${onlyFileName}` 
+        `echo >> ${target_pascal_voc_path}/ImageSets/Main/${onlyFileName}`
+        `cat ${source_pascal_voc_path}/ImageSets/Main/${onlyFileName} >> ${target_pascal_voc_path}/ImageSets/Main/${onlyFileName}` 
     done
 
 IFS=$SAVEIFS
