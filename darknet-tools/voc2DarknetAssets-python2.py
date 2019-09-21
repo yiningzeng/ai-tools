@@ -1,4 +1,4 @@
-#coding=utf-8
+# coding=utf-8
 import xml.etree.ElementTree as ET
 import pickle
 import os
@@ -9,6 +9,7 @@ from PIL import Image
 from kmeans import kmeans
 from os import listdir, getcwd
 from os.path import join
+import imghdr
 
 sets = []
 
@@ -73,22 +74,22 @@ def parse_args():
 
 
 def convert(size, box):
-    dw = 1./(size[0])
-    dh = 1./(size[1])
-    x = (box[0] + box[1])/2.0 - 1
-    y = (box[2] + box[3])/2.0 - 1
+    dw = 1. / (size[0])
+    dh = 1. / (size[1])
+    x = (box[0] + box[1]) / 2.0 - 1
+    y = (box[2] + box[3]) / 2.0 - 1
     w = box[1] - box[0]
     h = box[3] - box[2]
-    x = x*dw
-    w = w*dw
-    y = y*dh
-    h = h*dh
-    return (x,y,w,h)
+    x = x * dw
+    w = w * dw
+    y = y * dh
+    h = h * dh
+    return (x, y, w, h)
 
 
 def convert_annotation(dir, image_id):
-    in_file = open('%s/Annotations/%s.xml'%(dir, image_id))
-    out_file = open('%s/labels/%s.txt'%(dir, image_id), 'w')
+    in_file = open('%s/Annotations/%s.xml' % (dir, image_id))
+    out_file = open('%s/labels/%s.txt' % (dir, image_id), 'w')
     tree = ET.parse(in_file)
     root = tree.getroot()
     size = root.find('size')
@@ -102,8 +103,9 @@ def convert_annotation(dir, image_id):
             continue
         cls_id = classes.index(cls)
         xmlbox = obj.find('bndbox')
-        b = (float(xmlbox.find('xmin').text), float(xmlbox.find('xmax').text), float(xmlbox.find('ymin').text), float(xmlbox.find('ymax').text))
-        bb = convert((w,h), b)
+        b = (float(xmlbox.find('xmin').text), float(xmlbox.find('xmax').text), float(xmlbox.find('ymin').text),
+             float(xmlbox.find('ymax').text))
+        bb = convert((w, h), b)
         out_file.write(str(cls_id) + " " + " ".join([str(a) for a in bb]) + '\n')
 
 
@@ -127,8 +129,8 @@ def load_dataset(path):
 
         for line in txt_content:
             line_split = line.split(' ')
-            roi_with = float(line_split[len(line_split)-2])
-            roi_height = float(line_split[len(line_split)-1])
+            roi_with = float(line_split[len(line_split) - 2])
+            roi_height = float(line_split[len(line_split) - 1])
             if roi_with == 0 or roi_height == 0:
                 continue
             dataset.append([roi_with, roi_height])
@@ -156,8 +158,15 @@ if __name__ == '__main__':
     os.system("rm %s/*.data" % args.voc_dir)
     os.system("rm %s/*.txt" % args.voc_dir)
     val_count = int(os.popen("ls -l %s|grep _val.txt|wc -l" % args.voc_dir).read().replace('\n', ''))
-    set_files = glob.glob(args.voc_dir+'/ImageSets/Main/*.txt')
-
+    set_files = sorted(glob.glob(args.voc_dir+'/ImageSets/Main/*.txt'))
+    # set_files = [args.voc_dir + '/ImageSets/Main/big_dian.txt',
+    #              args.voc_dir + '/ImageSets/Main/xian.txt',
+    #              args.voc_dir + '/ImageSets/Main/dian.txt',
+    #              args.voc_dir + '/ImageSets/Main/white_dian.txt',
+    #              args.voc_dir + '/ImageSets/Main/big_yahen.txt',
+    #              args.voc_dir + '/ImageSets/Main/normal_yahen.txt',
+    #              args.voc_dir + '/ImageSets/Main/others.txt'
+    #              ]
     for num, set in enumerate(set_files):
         fname, fename = os.path.splitext(os.path.split(set)[1])
         if val_count > 0:
@@ -190,8 +199,12 @@ if __name__ == '__main__':
                 # print("%s.xml丢失" % filename)
                 lose = lose + 1
                 continue
-            if not os.path.exists('%s/JPEGImages/%s.image_id' % (args.voc_dir, filename)):
+            if not os.path.exists('%s/JPEGImages/%s' % (args.voc_dir, image_id)):
                 # print("%s.xml丢失" % filename)
+                lose = lose + 1
+                continue
+            if imghdr.what('%s/JPEGImages/%s' % (args.voc_dir, image_id)) is None:
+                # 完美解决梯度爆炸的问题
                 lose = lose + 1
                 continue
             # print(image_id)
@@ -230,20 +243,12 @@ if __name__ == '__main__':
     # 更改配置文件信息
     os.system('sed -i "s/@classes@/%d/g" "%s/yolov3-voc.cfg"' % (len(classes), args.voc_dir))
     os.system('sed -i "s/@filters@/%d/g" "%s/yolov3-voc.cfg"' % ((len(classes) + 5) * 3, args.voc_dir))
-    os.system('/darknet/darknet detector calc_anchors "%s/voc.data" -num_of_clusters %d -width %d -height %d '
+    os.system('/darknet/darknet detector calc_anchors_with_cfg "%s/voc.data" "%s/yolov3-voc.cfg" '
               '\echo $! > "%s/get_anchors_pid.log"' % (
-        args.voc_dir, args.clusters, args.size, args.size, args.voc_dir))
+                  args.voc_dir, args.voc_dir, args.voc_dir))
     anchors = os.popen('cat /darknet/anchors.txt').read().replace('\n', '')
     os.system('sed -i "s/@anchors@/%s/g" "%s/yolov3-voc.cfg"' % (anchors, args.voc_dir))
     print("\nAnchors: {}".format(anchors))
     print("done")
     # 更改聚类信息
     # str_anchors, anchors = get_anchor(args.voc_dir, args.clusters, args.size)
-
-
-
-
-
-
-
-
